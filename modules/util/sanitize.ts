@@ -20,13 +20,47 @@ const CONFIG: Config = {
   FORBID_ATTR: ['onclick', 'onerror', 'onload', 'onmouseover', 'style']
 };
 
+let _isSupported: boolean | undefined;
+
+
+/**
+ * Escapes text so it can be safely interpolated into an HTML string.
+ * @param value - Untrusted text
+ * @return Text with HTML-significant characters encoded
+ */
+export function utilEscapeHTML(value: Nullable<string>): string {
+  if (!value) return '';
+  return value.replace(/[&<>"']/g, char => {
+    switch (char) {
+      case '&': return '&amp;';
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '"': return '&quot;';
+      case '\'': return '&#39;';
+      default: return char;
+    }
+  });
+}
+
 
 /**
  * Sanitizes untrusted HTML while preserving the markup used by Rapid's UI.
+ * Falls back to escaping all markup when a compatible DOM is unavailable.
  * @param dirty - Untrusted HTML
  * @return HTML with executable content removed
  */
 export function utilSanitizeHTML(dirty: Nullable<string>): string {
   if (!dirty) return '';
+
+  if (_isSupported === undefined) {
+    if (typeof DOMPurify.sanitize !== 'function') {
+      _isSupported = false;
+    } else {
+      const probe = DOMPurify.sanitize('<img src="x" onerror="x">', CONFIG);
+      _isSupported = probe.includes('<img') && !probe.includes('onerror');
+    }
+  }
+
+  if (!_isSupported) return utilEscapeHTML(dirty);
   return DOMPurify.sanitize(dirty, CONFIG);
 }
