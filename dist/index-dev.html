@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset='utf-8'>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; connect-src 'self' blob: data: http: https:; font-src 'self' data:; form-action 'self' https:; frame-src 'self' https:; img-src 'self' blob: data: http: https:; media-src 'self' blob: data: http: https:; object-src 'none'; script-src 'self' https://browser-update.org 'sha256-RoJGENzSAWNE2TjHyMt0ou/g92kqakrcaVG15oFKd9k=' 'sha256-NxOOx7XhsrQtgegYz3lIw5KuZNnPOVXhUyjfknim0QM='; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; connect-src 'self' blob: data: http: https:; font-src 'self' data:; form-action 'self' https:; frame-src 'self' https:; img-src 'self' blob: data: http: https:; media-src 'self' blob: data: http: https:; object-src 'none'; script-src 'self' https://browser-update.org 'sha256-RoJGENzSAWNE2TjHyMt0ou/g92kqakrcaVG15oFKd9k=' 'sha256-YyzGG4W+9rPoNum2xLQpNQW//6jffeSCaXa7+0uIyHI='; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; trusted-types default dompurify; require-trusted-types-for 'script'; worker-src 'self' blob:">
     <title>Rapid Dev</title>
     <link rel='stylesheet' href='css/rapid.css'>
     <link rel='icon' type='image/svg' href='img/rapid_favicon-dev.svg'>
@@ -24,22 +24,17 @@
 
   <body>
     <script>var $buoop={required:{i:15,e:-4,f:-3,o:-3,s:-1,c:-3},reminder:0,noclose:true,no_permanent_hide:true,insecure:true,api:2021.06};</script>
-    <script src='https://browser-update.org/update.js'></script>
     <div id='rapid-container'></div>
 
+    <script src='js/rapid-dev.js'></script>
+    <script src='https://browser-update.org/update.js'></script>
     <script>
       var container = document.getElementById('rapid-container');
-      var newScript = document.createElement('script');
-      newScript.type = 'text/javascript';
-      newScript.onload = checkScript;
-      newScript.onerror = checkScript;
-      newScript.src = 'js/rapid-dev.js';
-
-      document.getElementsByTagName('head')[0].appendChild(newScript);
+      checkScript();
 
       function checkScript() {
         if (typeof Rapid === 'undefined' || !Rapid.utilDetect().support) {
-          container.innerHTML = 'Sorry, your browser is not currently supported.';
+          container.textContent = 'Sorry, your browser is not currently supported.';
           container.style.padding = '20px';
 
         } else {

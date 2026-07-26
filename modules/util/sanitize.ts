@@ -20,7 +20,23 @@ const CONFIG: Config = {
   FORBID_ATTR: ['onclick', 'onerror', 'onload', 'onmouseover', 'style']
 };
 
-let _isSupported: boolean | undefined;
+const TRUSTED_TYPES_CONFIG: Config = {
+  RETURN_TRUSTED_TYPE: false
+};
+
+const IS_SUPPORTED = supportsSanitization();
+
+
+function supportsSanitization(): boolean {
+  if (typeof DOMPurify.sanitize !== 'function') return false;
+
+  try {
+    const probe = DOMPurify.sanitize('<img src="x" onerror="x">', CONFIG);
+    return probe.includes('<img') && !probe.includes('onerror');
+  } catch {
+    return false;
+  }
+}
 
 
 /**
@@ -51,16 +67,19 @@ export function utilEscapeHTML(value: Nullable<string>): string {
  */
 export function utilSanitizeHTML(dirty: Nullable<string>): string {
   if (!dirty) return '';
-
-  if (_isSupported === undefined) {
-    if (typeof DOMPurify.sanitize !== 'function') {
-      _isSupported = false;
-    } else {
-      const probe = DOMPurify.sanitize('<img src="x" onerror="x">', CONFIG);
-      _isSupported = probe.includes('<img') && !probe.includes('onerror');
-    }
-  }
-
-  if (!_isSupported) return utilEscapeHTML(dirty);
+  if (!IS_SUPPORTED) return utilEscapeHTML(dirty);
   return DOMPurify.sanitize(dirty, CONFIG);
+}
+
+
+/**
+ * Sanitizes HTML assigned through the document-wide Trusted Types policy.
+ * Uses DOMPurify's standard allowlist to preserve Rapid's existing UI markup.
+ * @param dirty - HTML assigned to a Trusted Types injection sink
+ * @return HTML with executable content removed
+ */
+export function utilSanitizeHTMLForTrustedTypes(dirty: Nullable<string>): string {
+  if (!dirty) return '';
+  if (!IS_SUPPORTED) return utilEscapeHTML(dirty);
+  return DOMPurify.sanitize(dirty, TRUSTED_TYPES_CONFIG);
 }

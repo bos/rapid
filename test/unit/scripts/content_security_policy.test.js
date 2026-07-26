@@ -15,6 +15,8 @@ describe('Content Security Policy', () => {
     assert.include(policy, scriptHash(`alert('Hello, world.');`));
     assert.include(policy, 'https://browser-update.org');
     assert.notMatch(policy, /script-src [^;]*'unsafe-inline'/);
+    assert.include(policy, `trusted-types default dompurify`);
+    assert.include(policy, `require-trusted-types-for 'script'`);
   });
 
   it('inserts the policy immediately after the charset declaration', () => {

@@ -47,6 +47,8 @@ export function contentSecurityPolicy(html: string): string {
     `script-src ${scriptSources.join(' ')}`,
     `script-src-attr 'none'`,
     `style-src 'self' 'unsafe-inline'`,
+    `trusted-types default dompurify`,
+    `require-trusted-types-for 'script'`,
     `worker-src 'self' blob:`
   ].join('; ');
 }

@@ -1,4 +1,5 @@
 import './polyfills.ts';
+import './util/trusted_types.ts';
 
 // Capture the script URL at eval time (document.currentScript is only
 // available synchronously during script execution, not later in callbacks).
