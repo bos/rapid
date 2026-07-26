@@ -2,6 +2,12 @@
 
 Non-obvious choices where "why did we do it this way?" isn't captured in the code.
 
+## Web content security
+
+- **Use explicit strict sanitization at known trust boundaries plus browser enforcement as defense in depth.** External QA content, notes, remote metadata, Markdown, and reusable HTML widgets pass through Rapid's narrow DOMPurify allowlist. Trusted Types additionally routes legacy HTML sinks through DOMPurify's standard allowlist, but does not replace the explicit checks.
+- **Keep CSP inline scripts hash-based.** Rapid's existing bootstrap remains inline, but `script-src` has no `unsafe-inline`; exact SHA-256 hashes authorize it. The predeploy step refreshes hashes after embedding build data, and `check:csp` catches stale committed policies.
+- **Restrict the Trusted Types default policy rather than making it a bypass.** HTML is sanitized; dynamic script URLs are limited to same-origin resources and Browser-Update's two known loader paths; dynamic script bodies have no policy. An embedding page's pre-existing default policy remains in control.
+
 ## Pixi World-Coord Rendering (render_worldcoord)
 
 - **Scene graph hierarchy**: `stage → origin → world → groups → features`. `stage` centers [0,0] at screen center for rotation. `origin` shifts back to top-left and absorbs panning offset (via Pixi's own `x/y`). `world` maps z16 world coordinates to screen pixels via `world.scale = 2^(pixiTransform.z - WORLD_ZOOM)` and `world.position = (pixiTransform.x - WORLD_HALF * scale, pixiTransform.y - WORLD_HALF * scale)`. All layers that render entity geometry live under `world`.
