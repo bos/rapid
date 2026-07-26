@@ -70,7 +70,7 @@
     "osm-auth": "~3.2.0",
     "osm-community-index": "~6.0.0",
     "pannellum": "^2.5.7",
-    "pbf": "^4.0.1",
+    "pbf": "^5.1.2",
     "pixi-filters": "^6.1.5",
     "pixi.js": "8.18.1",
     "pmtiles": "^4.4.1",
